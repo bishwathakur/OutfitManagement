@@ -16,8 +16,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +36,8 @@ fun AddEditScreen(
 ) {
     val formState by viewModel.formState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    
+    val context = LocalContext.current
+
     // Load outfit if editing
     LaunchedEffect(outfitId) {
         if (outfitId != null) {
@@ -44,11 +45,43 @@ fun AddEditScreen(
         }
     }
     
-    // Image picker launcher
-    val imagePickerLauncher = rememberLauncherForActivityResult(
+    // State for photo source bottom sheet
+    var showPhotoSourceSheet by remember { mutableStateOf(false) }
+    
+    // Gallery picker launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { viewModel.setImageUri(it) }
+    }
+    
+    // Camera launcher
+    var tempPhotoUri by remember { mutableStateOf<Uri?>(null) }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success && tempPhotoUri != null) {
+            viewModel.setImageUri(tempPhotoUri!!)
+        }
+    }
+    
+    // Permission launcher for camera
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            // Create temp file for camera
+            val photoFile = java.io.File(
+                context.cacheDir,
+                "temp_outfit_${System.currentTimeMillis()}.jpg"
+            )
+            tempPhotoUri = androidx.core.content.FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                photoFile
+            )
+            cameraLauncher.launch(tempPhotoUri)
+        }
     }
     
     Scaffold(
@@ -93,7 +126,7 @@ fun AddEditScreen(
             // Image picker
             ImagePicker(
                 imageUri = formState.imageUri,
-                onImagePick = { imagePickerLauncher.launch("image/*") }
+                onImagePick = { showPhotoSourceSheet = true }
             )
             
             // Error message
@@ -149,6 +182,41 @@ fun AddEditScreen(
                 }
             }
             
+            // Category dropdown (NEW)
+            var categoryExpanded by remember { mutableStateOf(false) }
+            val categories = listOf("Regular", "Underwear", "Formal", "Activewear")
+            
+            ExposedDropdownMenuBox(
+                expanded = categoryExpanded,
+                onExpandedChange = { categoryExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = formState.category,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Category") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+                
+                ExposedDropdownMenu(
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false }
+                ) {
+                    categories.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(category) },
+                            onClick = {
+                                viewModel.setCategory(category)
+                                categoryExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            
             // Notes field
             OutlinedTextField(
                 value = formState.notes,
@@ -171,6 +239,62 @@ fun AddEditScreen(
             }
         }
     }
+    
+    // Photo source selection bottom sheet
+    if (showPhotoSourceSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showPhotoSourceSheet = false },
+            sheetState = rememberModalBottomSheetState()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .padding(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Select Photo Source",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                // Camera option
+                Button(
+                    onClick = {
+                        showPhotoSourceSheet = false
+                        cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack, // Using ArrowBack as placeholder
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Take Photo", modifier = Modifier.padding(vertical = 8.dp))
+                }
+                
+                // Gallery option
+                OutlinedButton(
+                    onClick = {
+                        showPhotoSourceSheet = false
+                        galleryLauncher.launch("image/*")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack, // Using ArrowBack as placeholder  
+                        contentDescription = null,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Choose from Gallery", modifier = Modifier.padding(vertical = 8.dp))
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -184,7 +308,11 @@ private fun ImagePicker(
             .aspectRatio(3f / 4f)
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceVariant)
-            .clickable(onClick = onImagePick),
+            .clickable(
+                onClick = onImagePick,
+                indication = null,
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            ),
         contentAlignment = Alignment.Center
     ) {
         if (imageUri != null) {

@@ -22,6 +22,7 @@ class AddEditViewModel(
         val imageUri: Uri? = null,
         val name: String = "",
         val type: String = "Casual",
+        val category: String = "Regular",
         val notes: String = "",
         val isSaving: Boolean = false,
         val error: String? = null
@@ -41,6 +42,7 @@ class AddEditViewModel(
                 imageUri = Uri.parse(outfit.imageUri),
                 name = outfit.name,
                 type = outfit.type,
+                category = outfit.category,
                 notes = outfit.notes
             )
         }
@@ -65,6 +67,13 @@ class AddEditViewModel(
      */
     fun setType(type: String) {
         _formState.value = _formState.value.copy(type = type)
+    }
+    
+    /**
+     * Update category.
+     */
+    fun setCategory(category: String) {
+        _formState.value = _formState.value.copy(category = category)
     }
     
     /**
@@ -96,6 +105,7 @@ class AddEditViewModel(
                     imageUri = state.imageUri,
                     name = state.name,
                     type = state.type,
+                    category = state.category,
                     notes = state.notes,
                     state = OutfitState.AVAILABLE
                 )
@@ -106,6 +116,7 @@ class AddEditViewModel(
                     imageUri = state.imageUri,
                     name = state.name,
                     type = state.type,
+                    category = state.category,
                     notes = state.notes
                 )
             }

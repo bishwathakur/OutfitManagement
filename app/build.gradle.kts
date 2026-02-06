@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.outfitmanager"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.outfitmanager"
@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.foundation:foundation:1.10.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
@@ -82,6 +83,9 @@ dependencies {
 
     // Activity Compose
     implementation("androidx.activity:activity-compose:1.8.2")
+    
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     
     // Core
     implementation("androidx.core:core-ktx:1.12.0")

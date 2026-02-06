@@ -46,4 +46,16 @@ interface OutfitDao {
      */
     @Delete
     suspend fun deleteOutfit(outfit: OutfitEntity)
+    
+    /**
+     * Get all outfits in "Worn" state for auto-transition checking.
+     */
+    @Query("SELECT * FROM outfits WHERE state = 'WORN' AND wornSinceTimestamp IS NOT NULL")
+    suspend fun getWornOutfits(): List<OutfitEntity>
+    
+    /**
+     * Count outfits that need laundry (for notifications).
+     */
+    @Query("SELECT COUNT(*) FROM outfits WHERE state = 'NEEDS_LAUNDRY'")
+    suspend fun getNeedsLaundryCount(): Int
 }

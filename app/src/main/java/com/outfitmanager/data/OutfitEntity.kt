@@ -22,8 +22,14 @@ data class OutfitEntity(
     /** Type: Casual, Formal, Gym, or Other */
     val type: String,
     
+    /** Category for auto-transition logic: Regular, Underwear, Formal, Activewear */
+    val category: String = "Regular",
+    
     /** Current state of the outfit */
     val state: OutfitState,
+    
+    /** Timestamp when outfit was marked as "Worn" (for auto-transition) */
+    val wornSinceTimestamp: Long? = null,
     
     /** Optional user notes */
     val notes: String,

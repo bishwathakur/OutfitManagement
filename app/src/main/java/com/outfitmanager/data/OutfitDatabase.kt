@@ -12,7 +12,7 @@ import android.content.Context
  */
 @Database(
     entities = [OutfitEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -31,10 +31,20 @@ abstract class OutfitDatabase : RoomDatabase() {
                     OutfitDatabase::class.java,
                     "outfit_database"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
+            }
+        }
+        
+        private val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                // Add category column with default value "Regular"
+                database.execSQL("ALTER TABLE outfits ADD COLUMN category TEXT NOT NULL DEFAULT 'Regular'")
+                // Add wornSinceTimestamp column (nullable)
+                database.execSQL("ALTER TABLE outfits ADD COLUMN wornSinceTimestamp INTEGER")
             }
         }
     }

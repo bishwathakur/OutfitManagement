@@ -39,6 +39,7 @@ class OutfitRepository(private val context: Context) {
         imageUri: Uri,
         name: String,
         type: String,
+        category: String = "Regular",
         notes: String,
         state: OutfitState = OutfitState.AVAILABLE
     ): Long {
@@ -49,6 +50,7 @@ class OutfitRepository(private val context: Context) {
             imageUri = savedImageUri,
             name = name,
             type = type,
+            category = category,
             state = state,
             notes = notes,
             lastUpdated = System.currentTimeMillis()
@@ -59,11 +61,21 @@ class OutfitRepository(private val context: Context) {
     
     /**
      * Update an existing outfit's state.
+     * Sets wornSinceTimestamp when moving to WORN state.
+     * Clears wornSinceTimestamp when leaving WORN state.
      */
     suspend fun updateOutfitState(outfitId: Int, newState: OutfitState) {
         val outfit = dao.getOutfitById(outfitId) ?: return
+        
+        val wornTimestamp = when {
+            newState == OutfitState.WORN && outfit.state != OutfitState.WORN -> System.currentTimeMillis()
+            newState != OutfitState.WORN -> null
+            else -> outfit.wornSinceTimestamp
+        }
+        
         val updated = outfit.copy(
             state = newState,
+            wornSinceTimestamp = wornTimestamp,
             lastUpdated = System.currentTimeMillis()
         )
         dao.updateOutfit(updated)
@@ -77,6 +89,7 @@ class OutfitRepository(private val context: Context) {
         imageUri: Uri?,
         name: String,
         type: String,
+        category: String,
         notes: String
     ) {
         val outfit = dao.getOutfitById(outfitId) ?: return
@@ -93,6 +106,7 @@ class OutfitRepository(private val context: Context) {
             imageUri = newImageUri,
             name = name,
             type = type,
+            category = category,
             notes = notes,
             lastUpdated = System.currentTimeMillis()
         )
@@ -114,6 +128,37 @@ class OutfitRepository(private val context: Context) {
         }
         
         dao.deleteOutfit(outfit)
+    }
+    
+    /**
+     * Check all worn items and auto-transition to "Needs Laundry" if worn too long.
+     * Regular clothes: 3 days
+     * Underwear: 1 day
+     */
+    suspend fun checkAndAutoTransitionWornItems() {
+        val wornOutfits = dao.getWornOutfits()
+        val now = System.currentTimeMillis()
+        
+        wornOutfits.forEach { outfit ->
+            val wornDuration = now - (outfit.wornSinceTimestamp ?: return@forEach)
+            val daysWorn = wornDuration / (24 * 60 * 60 * 1000)
+            
+            val shouldTransition = when (outfit.category.lowercase()) {
+                "underwear" -> daysWorn >= 1
+                else -> daysWorn >= 3
+            }
+            
+            if (shouldTransition) {
+                updateOutfitState(outfit.id, OutfitState.NEEDS_LAUNDRY)
+            }
+        }
+    }
+    
+    /**
+     * Get count of items that need laundry (for notifications).
+     */
+    suspend fun getNeedsLaundryCount(): Int {
+        return dao.getNeedsLaundryCount()
     }
     
     /**

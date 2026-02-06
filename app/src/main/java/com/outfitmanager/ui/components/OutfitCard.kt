@@ -1,11 +1,14 @@
 package com.outfitmanager.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,7 +18,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.outfitmanager.data.OutfitEntity
 
@@ -36,21 +38,30 @@ fun OutfitCard(
             .aspectRatio(3f / 4f)
             .combinedClickable(
                 onClick = onClick,
-                onLongClick = onLongClick
+                onLongClick = onLongClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
             ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 0.dp
+        )
     ) {
-        Box {
+        Box(modifier = Modifier.fillMaxSize()) {
             // Outfit image
             AsyncImage(
                 model = outfit.imageUri,
                 contentDescription = outfit.name,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(20.dp)),
                 contentScale = ContentScale.Crop
             )
             
-            // Gradient overlay for better text readability
+            // Subtle gradient overlay for text readability
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -58,9 +69,9 @@ fun OutfitCard(
                         Brush.verticalGradient(
                             colors = listOf(
                                 Color.Transparent,
-                                Color.Black.copy(alpha = 0.7f)
+                                Color.Black.copy(alpha = 0.5f)
                             ),
-                            startY = 200f
+                            startY = 400f
                         )
                     )
             )
@@ -70,7 +81,7 @@ fun OutfitCard(
                 state = outfit.state,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(8.dp)
+                    .padding(12.dp)
             )
             
             // Name at bottom
@@ -79,10 +90,10 @@ fun OutfitCard(
                     text = outfit.name,
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .padding(12.dp),
+                        .padding(16.dp),
                     color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
