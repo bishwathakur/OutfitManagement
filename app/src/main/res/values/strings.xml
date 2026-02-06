@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Outfit Manager</string>
+    
+    <!-- States -->
+    <string name="state_available">Available</string>
+    <string name="state_worn">Worn</string>
+    <string name="state_needs_laundry">Needs Laundry</string>
+    <string name="state_in_laundry">In Laundry</string>
+    <string name="state_washed">Washed</string>
+    
+    <!-- Home Screen -->
+    <string name="filter_all">All</string>
+    <string name="empty_state_title">No outfits yet</string>
+    <string name="empty_state_message">Add your first outfit to get started</string>
+    
+    <!-- Add/Edit Screen -->
+    <string name="add_outfit">Add Outfit</string>
+    <string name="edit_outfit">Edit Outfit</string>
+    <string name="save">Save</string>
+    <string name="name_label">Name</string>
+    <string name="type_label">Type</string>
+    <string name="notes_label">Notes</string>
+    <string name="select_photo">Select Photo</string>
+    
+    <!-- Outfit Types -->
+    <string name="type_casual">Casual</string>
+    <string name="type_formal">Formal</string>
+    <string name="type_gym">Gym</string>
+    <string name="type_other">Other</string>
+    
+    <!-- Detail Sheet -->
+    <string name="current_state">Current:</string>
+    <string name="change_to">Change to:</string>
+    <string name="mark_as_worn">Mark as Worn</string>
+    <string name="send_to_laundry">Needs Laundry</string>
+    <string name="in_laundry">In Laundry</string>
+    <string name="mark_washed">Washed</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    
+    <!-- Quick Actions -->
+    <string name="quick_action_wear">Wear</string>
+    <string name="quick_action_laundry">To Laundry</string>
+    <string name="quick_action_wash">Mark Washed</string>
+    
+    <!-- Messages -->
+    <string name="photo_required">Photo is required</string>
+    <string name="outfit_saved">Outfit saved</string>
+    <string name="outfit_deleted">Outfit deleted</string>
+</resources>
