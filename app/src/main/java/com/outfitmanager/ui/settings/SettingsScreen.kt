@@ -114,7 +114,60 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
             )
             
-            // About Section
+            // About This App Section
+            SettingsSection(
+                title = "About This App",
+                icon = Icons.Outlined.Info
+            ) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Why I Built This",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Outfit Manager was created to solve a simple yet common problem: keeping track of your clothes and their laundry status. As someone who struggled with outfit management, I built this app to help myself and others stay organized.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
+                        )
+                        
+                        Spacer(modifier = Modifier.height(4.dp))
+                        
+                        Text(
+                            text = "Key Features",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Medium
+                        )
+                        
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            FeatureItem("📸", "Visual organization with photos")
+                            FeatureItem("🔄", "Track outfit states (Available → Worn → Laundry → Washed)")
+                            FeatureItem("⏰", "Auto-transition based on wear duration")
+                            FeatureItem("🔔", "Daily reminders at 2 PM")
+                            FeatureItem("🏷️", "Categorize by type (Underwear, Regular, etc.)")
+                        }
+                    }
+                }
+            }
+            
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+            )
+            
+            // About Developer Section
             SettingsSection(
                 title = "About Developer",
                 icon = Icons.Outlined.Info
@@ -213,6 +266,27 @@ private fun SettingsSection(
             )
         }
         content()
+    }
+}
+
+@Composable
+private fun FeatureItem(
+    icon: String,
+    text: String
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = icon,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
