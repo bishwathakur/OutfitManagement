@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,17 +42,17 @@ fun AddEditScreen(
             viewModel.loadOutfit(outfitId)
         }
     }
-    
+
     // State for photo source bottom sheet
     var showPhotoSourceSheet by remember { mutableStateOf(false) }
-    
+
     // Gallery picker launcher
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let { viewModel.setImageUri(it) }
     }
-    
+
     // Camera launcher
     var tempPhotoUri by remember { mutableStateOf<Uri?>(null) }
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -64,7 +62,7 @@ fun AddEditScreen(
             viewModel.setImageUri(tempPhotoUri!!)
         }
     }
-    
+
     // Permission launcher for camera
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -83,14 +81,23 @@ fun AddEditScreen(
             cameraLauncher.launch(tempPhotoUri)
         }
     }
-    
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(if (outfitId == null) "Add Outfit" else "Edit Outfit") },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        if (outfitId == null) "Add Outfit" else "Edit Outfit",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    TextButton(onClick = onNavigateBack) {
+                        Text(
+                            "Cancel",
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 },
                 actions = {
@@ -104,53 +111,67 @@ fun AddEditScreen(
                         },
                         enabled = !formState.isSaving
                     ) {
-                        Text("Save", color = MaterialTheme.colorScheme.onPrimary)
+                        Text(
+                            "Save",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Image picker
             ImagePicker(
                 imageUri = formState.imageUri,
                 onImagePick = { showPhotoSourceSheet = true }
             )
-            
+
             // Error message
             formState.error?.let { error ->
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.errorContainer
+                ) {
+                    Text(
+                        text = error,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
-            
+
             // Name field
             OutlinedTextField(
                 value = formState.name,
                 onValueChange = { viewModel.setName(it) },
                 label = { Text("Name (optional)") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                )
             )
-            
+
             // Type dropdown
             var typeExpanded by remember { mutableStateOf(false) }
             val types = listOf("Casual", "Formal", "Gym", "Other")
-            
+
             ExposedDropdownMenuBox(
                 expanded = typeExpanded,
                 onExpandedChange = { typeExpanded = it }
@@ -163,16 +184,25 @@ fun AddEditScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor()
+                        .menuAnchor(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                    )
                 )
-                
+
                 ExposedDropdownMenu(
                     expanded = typeExpanded,
                     onDismissRequest = { typeExpanded = false }
                 ) {
                     types.forEach { type ->
                         DropdownMenuItem(
-                            text = { Text(type) },
+                            text = {
+                                Text(
+                                    type,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            },
                             onClick = {
                                 viewModel.setType(type)
                                 typeExpanded = false
@@ -181,11 +211,11 @@ fun AddEditScreen(
                     }
                 }
             }
-            
-            // Category dropdown (NEW)
+
+            // Category dropdown
             var categoryExpanded by remember { mutableStateOf(false) }
             val categories = listOf("Regular", "Underwear", "Formal", "Activewear")
-            
+
             ExposedDropdownMenuBox(
                 expanded = categoryExpanded,
                 onExpandedChange = { categoryExpanded = it }
@@ -198,16 +228,25 @@ fun AddEditScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor()
+                        .menuAnchor(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                    )
                 )
-                
+
                 ExposedDropdownMenu(
                     expanded = categoryExpanded,
                     onDismissRequest = { categoryExpanded = false }
                 ) {
                     categories.forEach { category ->
                         DropdownMenuItem(
-                            text = { Text(category) },
+                            text = {
+                                Text(
+                                    category,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            },
                             onClick = {
                                 viewModel.setCategory(category)
                                 categoryExpanded = false
@@ -216,7 +255,7 @@ fun AddEditScreen(
                     }
                 }
             }
-            
+
             // Notes field
             OutlinedTextField(
                 value = formState.notes,
@@ -224,73 +263,86 @@ fun AddEditScreen(
                 label = { Text("Notes (optional)") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp),
-                maxLines = 5
+                    .height(140.dp),
+                maxLines = 5,
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
+                )
             )
-            
+
             // Loading indicator
             if (formState.isSaving) {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        strokeWidth = 3.dp
+                    )
                 }
             }
         }
     }
-    
+
     // Photo source selection bottom sheet
     if (showPhotoSourceSheet) {
         ModalBottomSheet(
             onDismissRequest = { showPhotoSourceSheet = false },
-            sheetState = rememberModalBottomSheetState()
+            sheetState = rememberModalBottomSheetState(),
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(bottom = 32.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = "Select Photo Source",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = "Add Photo",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                
+
                 // Camera option
-                Button(
+                FilledTonalButton(
                     onClick = {
                         showPhotoSourceSheet = false
                         cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack, // Using ArrowBack as placeholder
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
+                    Text(
+                        "Take Photo",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Medium
                     )
-                    Text("Take Photo", modifier = Modifier.padding(vertical = 8.dp))
                 }
-                
+
                 // Gallery option
-                OutlinedButton(
+                FilledTonalButton(
                     onClick = {
                         showPhotoSourceSheet = false
                         galleryLauncher.launch("image/*")
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack, // Using ArrowBack as placeholder  
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
+                    Text(
+                        "Choose from Gallery",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Medium
                     )
-                    Text("Choose from Gallery", modifier = Modifier.padding(vertical = 8.dp))
                 }
             }
         }
@@ -306,8 +358,8 @@ private fun ImagePicker(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(3f / 4f)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
             .clickable(
                 onClick = onImagePick,
                 indication = null,
@@ -325,16 +377,33 @@ private fun ImagePicker(
         } else {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                    modifier = Modifier.size(80.dp),
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = "📷",
+                            fontSize = 40.sp
+                        )
+                    }
+                }
                 Text(
-                    text = "📷",
-                    fontSize = 48.sp
+                    text = "Add Photo",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Tap to select photo",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
+                    text = "Tap to select",
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
