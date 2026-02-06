@@ -2,44 +2,44 @@ package com.outfitmanager.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary colors - Minimal aesthetic
-val PrimaryLight = Color(0xFF1976D2)        // Rich blue
-val PrimaryDark = Color(0xFF90CAF9)         // Soft blue
+// Primary colors - Midnight Purple & Violet (Bold, Luxurious)
+val PrimaryLight = Color(0xFF6A1B9A)        // Deep rich purple
+val PrimaryDark = Color(0xFFB39DDB)         // Soft lavender
 
-val SecondaryLight = Color(0xFF546E7A)      // Medium gray
-val SecondaryDark = Color(0xFFB0BEC5)       // Cool gray
+val SecondaryLight = Color(0xFF7E57C2)      // Medium violet
+val SecondaryDark = Color(0xFFCE93D8)       // Light purple
 
-val TertiaryLight = Color(0xFF8E24AA)       // Rich purple
-val TertiaryDark = Color(0xFFCE93D8)        // Soft purple
+val TertiaryLight = Color(0xFF9C27B0)       // Vivid purple
+val TertiaryDark = Color(0xFFE1BEE7)        // Pale lavender
 
 // Container colors
-val PrimaryContainerLight = Color(0xFFD1E4FF)
-val PrimaryContainerDark = Color(0xFF1E3A5F)
+val PrimaryContainerLight = Color(0xFFF3E5F5)  // Very light purple
+val PrimaryContainerDark = Color(0xFF4A148C)   // Deep midnight purple
 
-val SecondaryContainerLight = Color(0xFFECEFF1)
-val SecondaryContainerDark = Color(0xFF37474F)
+val SecondaryContainerLight = Color(0xFFEDE7F6)
+val SecondaryContainerDark = Color(0xFF512DA8)
 
-// Surface colors for cards and backgrounds
-val SurfaceLight = Color(0xFFFAF9F6)        // Soft warm white
-val SurfaceDark = Color(0xFF1A1A1A)         // Deep charcoal
+// Surface colors - Pearl & Midnight
+val SurfaceLight = Color(0xFFFFFBFE)        // Pearl white with hint of purple
+val SurfaceDark = Color(0xFF121212)         // True midnight black
 
-val SurfaceVariantLight = Color(0xFFF0F0F0)
-val SurfaceVariantDark = Color(0xFF2C2C2C)
+val SurfaceVariantLight = Color(0xFFF5F0F7)  // Light lavender tint
+val SurfaceVariantDark = Color(0xFF1E1E1E)   // Dark charcoal
 
-val SurfaceContainerLight = Color(0xFFE8E8E8)
-val SurfaceContainerDark = Color(0xFF3A3A3A)
+val SurfaceContainerLight = Color(0xFFECE6EE)  // Soft purple-tinted gray
+val SurfaceContainerDark = Color(0xFF2A2A2A)   // Medium charcoal
 
 // Text colors
-val OnSurfaceLight = Color(0xFF1A1A1A)
-val OnSurfaceDark = Color(0xFFE8E8E8)
+val OnSurfaceLight = Color(0xFF1C1B1F)
+val OnSurfaceDark = Color(0xFFE6E1E5)
 
-val OnSurfaceVariantLight = Color(0xFF5F5F5F)
-val OnSurfaceVariantDark = Color(0xFFB0B0B0)
+val OnSurfaceVariantLight = Color(0xFF49454F)
+val OnSurfaceVariantDark = Color(0xFFCAC4D0)
 
-val OnPrimaryContainerLight = Color(0xFF0D47A1)
-val OnPrimaryContainerDark = Color(0xFFD1E4FF)
+val OnPrimaryContainerLight = Color(0xFF4A148C)
+val OnPrimaryContainerDark = Color(0xFFEADDFF)
 
-// Outfit state colors
+// Outfit state colors (keep vibrant for clarity)
 val StateAvailable = Color(0xFF4CAF50)      // Green
 val StateWorn = Color(0xFFFFC107)           // Amber
 val StateNeedsLaundry = Color(0xFFFF5722)   // Deep Orange

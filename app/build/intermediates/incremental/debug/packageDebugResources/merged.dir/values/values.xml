@@ -42,6 +42,6 @@
     <string name="type_gym">Gym</string>
     <string name="type_label">Type</string>
     <string name="type_other">Other</string>
-    <style name="Theme.OutfitManagement" ns1:targetApi="31" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.OutfitManagement" parent="android:Theme.Material.Light.NoActionBar" ns1:targetApi="31">
     </style>
 </resources>

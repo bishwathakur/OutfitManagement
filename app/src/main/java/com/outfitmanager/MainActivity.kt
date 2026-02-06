@@ -69,7 +69,15 @@ fun OutfitApp(repository: OutfitRepository) {
             HomeScreen(
                 viewModel = viewModel,
                 onNavigateToAdd = { navController.navigate("add") },
-                onNavigateToEdit = { id -> navController.navigate("edit/$id") }
+                onNavigateToEdit = { id -> navController.navigate("edit/$id") },
+                onNavigateToSettings = { navController.navigate("settings") }
+            )
+        }
+        
+        // Settings screen
+        composable("settings") {
+            com.outfitmanager.ui.settings.SettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
             )
         }
         

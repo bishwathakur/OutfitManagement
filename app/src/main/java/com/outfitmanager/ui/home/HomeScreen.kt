@@ -5,6 +5,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +28,8 @@ import com.outfitmanager.ui.detail.OutfitDetailSheet
 fun HomeScreen(
     viewModel: HomeViewModel,
     onNavigateToAdd: () -> Unit,
-    onNavigateToEdit: (Int) -> Unit
+    onNavigateToEdit: (Int) -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     val outfits by viewModel.outfits.collectAsState()
     val selectedFilter by viewModel.selectedFilter.collectAsState()
@@ -43,6 +46,15 @@ fun HomeScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Medium
                     )
+                },
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
