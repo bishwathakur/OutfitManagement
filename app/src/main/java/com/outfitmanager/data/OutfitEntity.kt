@@ -31,6 +31,9 @@ data class OutfitEntity(
     /** Timestamp when outfit was marked as "Worn" (for auto-transition) */
     val wornSinceTimestamp: Long? = null,
     
+    /** Timestamp when outfit was put in laundry (for 4-day auto-transition to WASHED) */
+    val inLaundrySinceTimestamp: Long? = null,
+    
     /** Optional user notes */
     val notes: String,
     

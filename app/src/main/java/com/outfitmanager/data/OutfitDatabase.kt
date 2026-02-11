@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Room database for the Outfit Manager app.
@@ -12,7 +14,7 @@ import android.content.Context
  */
 @Database(
     entities = [OutfitEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -31,20 +33,25 @@ abstract class OutfitDatabase : RoomDatabase() {
                     OutfitDatabase::class.java,
                     "outfit_database"
                 )
-                    .addMigrations(MIGRATION_1_2)
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 instance
             }
         }
         
-        private val MIGRATION_1_2 = object : androidx.room.migration.Migration(1, 2) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+        private val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
                 // Add category column with default value "Regular"
                 database.execSQL("ALTER TABLE outfits ADD COLUMN category TEXT NOT NULL DEFAULT 'Regular'")
                 // Add wornSinceTimestamp column (nullable)
                 database.execSQL("ALTER TABLE outfits ADD COLUMN wornSinceTimestamp INTEGER")
+            }
+        }
+        
+        private val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE outfits ADD COLUMN inLaundrySinceTimestamp INTEGER")
             }
         }
     }

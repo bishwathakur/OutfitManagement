@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -62,17 +63,34 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onNavigateToAdd,
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Text(
-                    text = "+",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Normal
-                )
+            // Show "Collect All" button when viewing WASHED items
+            if (selectedFilter == OutfitState.WASHED && outfits.isNotEmpty()) {
+                androidx.compose.material3.ExtendedFloatingActionButton(
+                    onClick = { viewModel.markAllWashedAsAvailable() },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    androidx.compose.material3.Icon(
+                        imageVector = androidx.compose.material.icons.Icons.Default.Check,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Collect All")
+                }
+            } else {
+                FloatingActionButton(
+                    onClick = onNavigateToAdd,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        text = "+",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
             }
         },
         containerColor = MaterialTheme.colorScheme.surface

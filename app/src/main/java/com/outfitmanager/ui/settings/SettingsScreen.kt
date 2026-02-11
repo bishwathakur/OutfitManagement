@@ -10,7 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -324,7 +326,7 @@ private fun SocialLinkItem(
             )
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageVector = Icons.Outlined.PlayArrow,
+                imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)

@@ -58,4 +58,10 @@ interface OutfitDao {
      */
     @Query("SELECT COUNT(*) FROM outfits WHERE state = 'NEEDS_LAUNDRY'")
     suspend fun getNeedsLaundryCount(): Int
+    
+    @Query("SELECT * FROM outfits WHERE state = 'IN_LAUNDRY' AND inLaundrySinceTimestamp IS NOT NULL")
+    suspend fun getInLaundryOutfits(): List<OutfitEntity>
+    
+    @Query("SELECT COUNT(*) FROM outfits WHERE state = 'WASHED'")
+    suspend fun getWashedCount(): Int
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.outfitmanager.domain.OutfitState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import java.io.File
 import java.io.FileOutputStream
 
@@ -62,7 +63,8 @@ class OutfitRepository(private val context: Context) {
     /**
      * Update an existing outfit's state.
      * Sets wornSinceTimestamp when moving to WORN state.
-     * Clears wornSinceTimestamp when leaving WORN state.
+     * Sets inLaundrySinceTimestamp when moving to IN_LAUNDRY state.
+     * Clears timestamps when leaving respective states.
      */
     suspend fun updateOutfitState(outfitId: Int, newState: OutfitState) {
         val outfit = dao.getOutfitById(outfitId) ?: return
@@ -73,9 +75,16 @@ class OutfitRepository(private val context: Context) {
             else -> outfit.wornSinceTimestamp
         }
         
+        val laundryTimestamp = when {
+            newState == OutfitState.IN_LAUNDRY && outfit.state != OutfitState.IN_LAUNDRY -> System.currentTimeMillis()
+            newState != OutfitState.IN_LAUNDRY -> null
+            else -> outfit.inLaundrySinceTimestamp
+        }
+        
         val updated = outfit.copy(
             state = newState,
             wornSinceTimestamp = wornTimestamp,
+            inLaundrySinceTimestamp = laundryTimestamp,
             lastUpdated = System.currentTimeMillis()
         )
         dao.updateOutfit(updated)
@@ -159,6 +168,40 @@ class OutfitRepository(private val context: Context) {
      */
     suspend fun getNeedsLaundryCount(): Int {
         return dao.getNeedsLaundryCount()
+    }
+    
+    /**
+     * Check IN_LAUNDRY items and auto-transition to WASHED after 4 days.
+     */
+    suspend fun checkAndAutoTransitionLaundryItems() {
+        val inLaundryOutfits = dao.getInLaundryOutfits()
+        val now = System.currentTimeMillis()
+        
+        inLaundryOutfits.forEach { outfit ->
+            val laundryDuration = now - (outfit.inLaundrySinceTimestamp ?: return@forEach)
+            val daysInLaundry = laundryDuration / (24 * 60 * 60 * 1000)
+            
+            if (daysInLaundry >= 4) {
+                updateOutfitState(outfit.id, OutfitState.WASHED)
+            }
+        }
+    }
+    
+    /**
+     * Get count of washed items (for notifications).
+     */
+    suspend fun getWashedCount(): Int {
+        return dao.getWashedCount()
+    }
+    
+    /**
+     * Mark all WASHED items as AVAILABLE (collected from laundry).
+     */
+    suspend fun markAllWashedAsAvailable() {
+        val washedOutfits = dao.getOutfitsByState(OutfitState.WASHED).first()
+        washedOutfits.forEach { outfit ->
+            updateOutfitState(outfit.id, OutfitState.AVAILABLE)
+        }
     }
     
     /**

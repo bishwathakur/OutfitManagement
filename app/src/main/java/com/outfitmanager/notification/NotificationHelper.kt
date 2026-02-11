@@ -18,6 +18,7 @@ object NotificationHelper {
     
     private const val CHANNEL_ID = "laundry_reminders"
     private const val NOTIFICATION_ID = 1001
+    private const val LAUNDRY_READY_ID = 1002  // NEW: Separate ID for ready notifications
     
     /**
      * Create notification channel (required for Android 8.0+).
@@ -75,6 +76,41 @@ object NotificationHelper {
             }
         } else {
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+        }
+    }
+    
+    /**
+     * Show notification when laundry is ready to collect.
+     */
+    fun showLaundryReadyNotification(context: Context, count: Int) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent, PendingIntent.FLAG_IMMUTABLE
+        )
+        
+        val text = if (count == 1) {
+            "🧺 1 outfit is ready to collect!"
+        } else {
+            "🧺 $count outfits are ready to collect!"
+        }
+        
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Laundry Ready!")
+            .setContentText(text)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+                NotificationManagerCompat.from(context).notify(LAUNDRY_READY_ID, notification)
+            }
+        } else {
+            NotificationManagerCompat.from(context).notify(LAUNDRY_READY_ID, notification)
         }
     }
 }

@@ -59,4 +59,10 @@ class HomeViewModel(
             repository.deleteOutfit(outfit)
         }
     }
+    
+    fun markAllWashedAsAvailable() {
+        viewModelScope.launch {
+            repository.markAllWashedAsAvailable()
+        }
+    }
 }

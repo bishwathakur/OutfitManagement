@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -15,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,7 +37,7 @@ fun OutfitDetailSheet(
 ) {
     // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
-    
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -120,12 +117,37 @@ fun OutfitDetailSheet(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Current Status",
+                    text = "Status",
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 StateBadge(state = outfit.state)
+            }
+
+            // Got It Back button for WASHED items
+            if (outfit.state == OutfitState.WASHED) {
+                FilledTonalButton(
+                    onClick = { onStateChange(OutfitState.AVAILABLE) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        "Got It Back",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                )
             }
 
             // State change buttons
@@ -209,22 +231,16 @@ fun OutfitDetailSheet(
                 }
             }
         }
-        
+
         // Delete confirmation dialog
         if (showDeleteDialog) {
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
-                icon = {
-                    Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.Warning,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                },
                 title = {
                     Text(
                         text = "Delete Outfit?",
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Medium
                     )
                 },
                 text = {
@@ -234,7 +250,8 @@ fun OutfitDetailSheet(
                         } else {
                             "Are you sure you want to delete this outfit? This action cannot be undone."
                         },
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 confirmButton = {
@@ -247,18 +264,25 @@ fun OutfitDetailSheet(
                             contentColor = MaterialTheme.colorScheme.error
                         )
                     ) {
-                        Text("Yes, Delete")
+                        Text(
+                            "Delete",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { showDeleteDialog = false }
                     ) {
-                        Text("Cancel")
+                        Text(
+                            "Cancel",
+                            style = MaterialTheme.typography.labelLarge
+                        )
                     }
                 },
                 containerColor = MaterialTheme.colorScheme.surface,
-                shape = RoundedCornerShape(28.dp)
+                shape = RoundedCornerShape(24.dp)
             )
         }
     }
